@@ -37,10 +37,18 @@ MOBILE? prompt point at.
 # in ../TU-survival — commit first, versionCode = git rev-list --count HEAD
 npm run android:sync && npm run android:apk
 
-gh release create v<versionName> \
-  android/app/build/outputs/apk/release/TU-Zombie-v<name>.<code>.apk \
-  "android/app/build/outputs/apk/release/TU-Zombie-v<name>.<code>.apk#tu-zombie-survival.apk" \
-  --repo pnksounds-dev/tusurvival-gitreleae --title "TU // ZOMBIE SURVIVAL v<versionName>"
+# two steps — `gh release create` with attached assets 404'd the upload and
+# rolled back; create first, then upload each asset (the #rename trick does
+# not work on `release upload` — copy the file instead).
+gh release create v<versionName> --repo pnksounds-dev/tusurvival-gitreleae \
+  --title "TU // ZOMBIE SURVIVAL v<versionName>" --notes "…"
+gh release upload v<versionName> --repo pnksounds-dev/tusurvival-gitreleae \
+  android/app/build/outputs/apk/release/TU-Zombie-v<name>.<code>.apk
+cp android/app/build/outputs/apk/release/TU-Zombie-v<name>.<code>.apk \
+  android/app/build/outputs/apk/release/tu-zombie-survival.apk
+gh release upload v<versionName> --repo pnksounds-dev/tusurvival-gitreleae \
+  android/app/build/outputs/apk/release/tu-zombie-survival.apk
+rm android/app/build/outputs/apk/release/tu-zombie-survival.apk
 ```
 
 Bare `v*` tags only — `releases/latest` resolution and semver sorting depend
